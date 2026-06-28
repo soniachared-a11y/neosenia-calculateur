@@ -1,0 +1,255 @@
+@import 'tailwindcss';
+
+/* ── Tokens NEOSENIA (identiques au site) ── */
+:root {
+  --bg: #0a0a0f;
+  --card: #14141e;           /* légèrement plus clair = moins "plombant" */
+  --text: #ffffff;
+  --muted: #9494a0;          /* un cran plus clair pour meilleure lisibilité */
+  --cyan: #00d4ff;
+  --gold: #d4a853;
+  --border: rgba(255, 255, 255, 0.09);
+  --border-card: rgba(255, 255, 255, 0.13);  /* bordures plus visibles */
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-card: var(--card);
+  --color-primary: var(--text);
+  --color-muted: var(--muted);
+  --color-cyan: var(--cyan);
+  --color-gold: var(--gold);
+  --color-border: var(--border);
+  --color-border-card: var(--border-card);
+  --font-display: 'Clash Display', sans-serif;
+  --font-heading: 'Satoshi', sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* ── Base ── */
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Animations (easing expo/power3 uniquement) ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.anim-fade-up {
+  animation: fadeUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.anim-fade-up-2 { animation-delay: 0.1s; }
+.anim-fade-up-3 { animation-delay: 0.2s; }
+.anim-fade-up-4 { animation-delay: 0.3s; }
+
+.anim-fade-in {
+  animation: fadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-fade-up, .anim-fade-in {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── CTA pill glow ── */
+.cta-glow {
+  transition: box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cta-glow:hover {
+  box-shadow: 0 0 24px 6px rgba(0, 212, 255, 0.28), 0 0 48px 12px rgba(0, 212, 255, 0.1);
+  transform: translateY(-1px);
+}
+.cta-glow:active { transform: translateY(0); }
+
+/* ── Sliders cyan ── */
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 3px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  outline: none;
+}
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--cyan);
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+  transition: transform 0.15s ease;
+  cursor: grab;
+}
+input[type='range']::-webkit-slider-thumb:active { transform: scale(1.15); cursor: grabbing; }
+input[type='range']::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--cyan);
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+}
+
+/* ── Details (collapsible tech specs) ── */
+details > summary { cursor: pointer; list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+details[open] summary .chevron { transform: rotate(180deg); }
+.chevron { transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+
+/* ── Scroll reveals (IntersectionObserver) ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+/* ── Orbes lumineux animés (adapté uiverse.io → palette NEOSENIA) ── */
+@keyframes orb-drift-1 {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(28px, -18px) scale(1.08); }
+  66%  { transform: translate(-12px, 14px) scale(0.94); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+@keyframes orb-drift-2 {
+  0%   { transform: translate(0, 0) scale(1); }
+  40%  { transform: translate(-22px, 12px) scale(0.91); }
+  70%  { transform: translate(18px, -8px) scale(1.06); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+@keyframes orb-drift-3 {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(14px, 22px) scale(1.1); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+@keyframes orb-drift-4 {
+  0%   { transform: translate(-50%, -50%) scale(1); }
+  35%  { transform: translate(calc(-50% - 16px), calc(-50% - 12px)) scale(0.9); }
+  70%  { transform: translate(calc(-50% + 10px), calc(-50% + 18px)) scale(1.07); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+/* Conteneur carte avec orbes — isolation: isolate force un stacking context */
+.orb-card { position: relative; overflow: hidden; isolation: isolate; }
+.orb-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;  /* derrière tout le contenu du stacking context isolé */
+}
+.orb {
+  position: absolute;
+  border-radius: 50%;
+}
+/* Orbe 1 — cyan chaud, coin haut-gauche */
+.orb-1 {
+  width: 130px; height: 130px;
+  background: rgba(0, 212, 255, 0.15);
+  filter: blur(38px);
+  top: -35px; left: -25px;
+  animation: orb-drift-1 10s ease-in-out infinite;
+}
+/* Orbe 2 — indigo, coin haut-droit */
+.orb-2 {
+  width: 100px; height: 100px;
+  background: rgba(99, 102, 241, 0.2);
+  filter: blur(30px);
+  top: -15px; right: -20px;
+  animation: orb-drift-2 13s ease-in-out infinite;
+}
+/* Orbe 3 — sky-blue, bas-gauche */
+.orb-3 {
+  width: 110px; height: 110px;
+  background: rgba(56, 189, 248, 0.12);
+  filter: blur(35px);
+  bottom: -25px; left: 20px;
+  animation: orb-drift-3 15s ease-in-out infinite;
+}
+/* Orbe 4 — gold subtil, centre */
+.orb-4 {
+  width: 75px; height: 75px;
+  background: rgba(212, 168, 83, 0.11);
+  filter: blur(28px);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  animation: orb-drift-4 18s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orb { animation: none !important; }
+  .btn-vaisseau::before { animation: none !important; }
+}
+
+/* ── Bouton vaisseau lumineux — shimmer beam + pulse glow ── */
+@keyframes vaisseau-beam {
+  0%   { transform: translateX(-140%) skewX(-15deg); opacity: 0; }
+  8%   { opacity: 1; }
+  45%  { transform: translateX(240%) skewX(-15deg); opacity: 0.7; }
+  46%  { opacity: 0; }
+  100% { transform: translateX(240%) skewX(-15deg); opacity: 0; }
+}
+
+@keyframes vaisseau-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,212,255,0), 0 0 10px 1px rgba(0,212,255,0.12); }
+  50%       { box-shadow: 0 0 0 3px rgba(0,212,255,0.08), 0 0 20px 4px rgba(0,212,255,0.2); }
+}
+
+.btn-vaisseau {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(0, 212, 255, 0.25) !important;
+  animation: vaisseau-pulse 3.5s ease-in-out infinite;
+}
+
+.btn-vaisseau::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 45%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 212, 255, 0.1) 35%,
+    rgba(255, 255, 255, 0.07) 50%,
+    rgba(0, 212, 255, 0.05) 65%,
+    transparent 100%
+  );
+  pointer-events: none;
+  animation: vaisseau-beam 4.5s ease-in-out infinite;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }

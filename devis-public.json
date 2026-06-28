@@ -1,0 +1,161 @@
+{
+  "_meta": {
+    "generated": "2026-06-28",
+    "note": "Fichier généré par scripts/build-public-pricing.mjs. NE PAS éditer à la main.",
+    "source": "projection publique de led-pricing.json (données internes)"
+  },
+  "vat_pct": 20,
+  "families": [
+    {
+      "id": "crystal_film",
+      "family": "autocollant_transparent",
+      "label": "Écran holographique transparent (Crystal Film)",
+      "selected_for_catalog": true,
+      "public_quote_enabled": true,
+      "status": "active_priced",
+      "specs": {
+        "pitch_mm": 6.25,
+        "panel_mm": {
+          "w": 250,
+          "h": 1200
+        },
+        "brightness_nits": 4500,
+        "transparency_pct": 86,
+        "pixel_density_m2": 25600,
+        "ip_rating": "IP31",
+        "weight_kg_per_m2": 3
+      },
+      "screen_per_m2_eur": 1450,
+      "package_eur": {
+        "floor": 87,
+        "per_m2": 28
+      },
+      "freight_eur": {
+        "per_kg": 26,
+        "weight_kg_per_m2": 3
+      },
+      "controllers": [
+        {
+          "model": "Nova TB40",
+          "max_pixels": 700000,
+          "price_eur": 277
+        }
+      ],
+      "transit_days": [
+        50,
+        65
+      ],
+      "delivered_estimate": true,
+      "confidence": "medium",
+      "elec": {
+        "tension_input_v": 230,
+        "freq_hz": 50,
+        "max_w_m2": 800,
+        "avg_w_m2": 240,
+        "alim_type": "boitier_integre",
+        "circuit_dedie": "recommande_au_dela_4m2",
+        "regulation_fr": "Extinction obligatoire entre 1h00 et 6h00 (arrêté du 27/12/2018, publicité lumineuse)"
+      },
+      "livraison": {
+        "inclus": [
+          "Panneaux LED Crystal Film (P6.25, 86% transparence)",
+          "Boîtier power box (alimentation 230V → 5V DC + carte de réception intégrée)",
+          "Logiciel de gestion de contenu (licence incluse, mise à jour via Wi-Fi/USB)",
+          "Câbles alimentation et données entre les panneaux",
+          "Guide d'installation illustré (PDF + vidéo)"
+        ],
+        "non_inclus": [
+          "Structure ou cadre de support (fourni sur devis selon vitrine)",
+          "Travaux d'électricité si circuit dédié nécessaire (> 4 m²)",
+          "Installation par technicien partenaire (option, devis séparé)",
+          "Création de contenu visuel (option Neosenia disponible)"
+        ],
+        "delai_livraison_jours": [
+          50,
+          65
+        ],
+        "garantie_ans": 5
+      }
+    },
+    {
+      "id": "semi_opaque",
+      "family": "autocollant_semi_opaque",
+      "label": "Autocollant semi-opaque (haute luminosité, plein soleil)",
+      "selected_for_catalog": true,
+      "public_quote_enabled": false,
+      "status": "selected_sur_devis",
+      "note": "Configuration sur mesure — prix établi sur devis personnalisé."
+    },
+    {
+      "id": "transparent_structure",
+      "family": "transparent_structure",
+      "label": "LED transparent sur structure métallique démontable",
+      "selected_for_catalog": true,
+      "public_quote_enabled": true,
+      "status": "active_priced",
+      "specs": {
+        "pitch_mm": 3.9,
+        "panel_mm": {
+          "w": 1000,
+          "h": 1000
+        },
+        "brightness_nits": 5000,
+        "transparency_pct": 50,
+        "pixel_density_m2": 65536,
+        "ip_rating": "indoor",
+        "weight_kg_per_m2": 10
+      },
+      "screen_per_m2_eur": 680,
+      "package_eur": {
+        "floor": 87,
+        "per_m2": 28
+      },
+      "freight_eur": {
+        "per_kg": 38,
+        "weight_kg_per_m2": 10
+      },
+      "controllers": [
+        {
+          "model": "Nova TB40",
+          "max_pixels": 700000,
+          "price_eur": 277
+        }
+      ],
+      "transit_days": [
+        50,
+        65
+      ],
+      "delivered_estimate": true,
+      "confidence": "medium",
+      "elec": {
+        "tension_input_v": 230,
+        "freq_hz": 50,
+        "max_w_m2": 800,
+        "avg_w_m2": 240,
+        "alim_type": "cabinet_integre",
+        "circuit_dedie": "recommande_au_dela_4m2",
+        "regulation_fr": "Extinction obligatoire entre 1h00 et 6h00 (arrêté du 27/12/2018, publicité lumineuse)"
+      },
+      "livraison": {
+        "inclus": [
+          "Cabinets LED transparents TGC (P3.91, cabinet aluminium 1×1 m, 5000 nits)",
+          "Barres de suspension (hanging bars) pour montage démontable",
+          "Cartes de réception et logiciel de gestion de contenu (licence incluse)",
+          "Câbles alimentation et données entre les cabinets",
+          "Guide d'installation illustré (PDF + vidéo)"
+        ],
+        "non_inclus": [
+          "Structure métallique porteuse / fixation au bâti (sur devis selon site)",
+          "Travaux d'électricité si circuit dédié nécessaire (> 4 m²)",
+          "Installation par technicien partenaire (option, devis séparé)",
+          "Création de contenu visuel (option Neosenia disponible)"
+        ],
+        "delai_livraison_jours": [
+          50,
+          65
+        ],
+        "garantie_ans": 5
+      }
+    }
+  ]
+}
