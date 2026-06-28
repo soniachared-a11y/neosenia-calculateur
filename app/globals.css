@@ -290,6 +290,152 @@ details[open] summary .chevron { transform: rotate(180deg); }
   animation: vaisseau-beam 4.5s ease-in-out infinite;
 }
 
+/* ── Grille LED — entonnoir spotlight ── */
+.led-grid {
+  background-image:
+    linear-gradient(rgba(0, 212, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.055) 1px, transparent 1px);
+  background-size: 36px 36px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, black 20%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, black 20%, transparent 75%);
+}
+
+/* ── Cartes produit avec images dual-panel ── */
+.product-card {
+  position: relative;
+  border-radius: 16px;
+  border: 1.5px solid rgba(255,255,255,0.1);
+  background: #14141e;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.25s ease, box-shadow 0.3s ease, transform 0.25s cubic-bezier(0.16,1,0.3,1);
+  text-align: left;
+  width: 100%;
+}
+.product-card:hover {
+  border-color: rgba(0,212,255,0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 0 transparent;
+}
+.product-card.active {
+  border-color: rgba(0,212,255,0.7);
+  box-shadow: 0 0 0 1px rgba(0,212,255,0.3), 0 0 32px -4px rgba(0,212,255,0.25), 0 12px 40px rgba(0,0,0,0.35);
+}
+.product-img-panel {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+}
+.product-img-panel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
+  display: block;
+}
+.product-card:hover .product-img-panel img {
+  transform: scale(1.04);
+}
+/* Dégradé entonnoir bas → haut sur chaque image */
+.product-img-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(10,10,15,0.85) 0%,
+    rgba(10,10,15,0.3) 40%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+.product-img-label {
+  position: absolute;
+  bottom: 8px;
+  left: 10px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  z-index: 2;
+  pointer-events: none;
+}
+.product-img-code {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(0,212,255,0.3);
+  border-radius: 5px;
+  padding: 2px 7px;
+  z-index: 2;
+}
+.product-img-divider {
+  width: 1px;
+  background: rgba(255,255,255,0.08);
+  flex-shrink: 0;
+}
+
+/* ── Devis carte LIGHT — document professionnel ── */
+.quote-light {
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.1);
+  box-shadow: 0 8px 48px rgba(0,0,0,0.28), 0 2px 8px rgba(0,0,0,0.15);
+  border-radius: 16px;
+  overflow: hidden;
+  color: #0f172a;
+}
+.quote-light-price {
+  color: #0f172a;
+  font-feature-settings: 'tnum';
+}
+.quote-light-muted {
+  color: #64748b;
+}
+.quote-light-label {
+  color: #94a3b8;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+}
+.quote-light-pill {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+.quote-light-divider {
+  border-color: #f1f5f9;
+}
+.quote-light-cta {
+  background: #00d4ff;
+  color: #0a0a0f;
+  transition: filter 0.2s ease, transform 0.2s ease;
+}
+.quote-light-cta:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+.quote-light-secondary {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.quote-light-secondary:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }

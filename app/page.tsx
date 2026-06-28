@@ -20,35 +20,53 @@ export default function Home() {
       />
 
       {/* ── Hero ── */}
-      <header className="relative mx-auto max-w-6xl overflow-hidden px-5 pb-8 pt-10 sm:pb-14 sm:pt-18">
+      <header className="relative mx-auto max-w-6xl overflow-hidden px-5 pb-10 pt-12 sm:pb-16 sm:pt-20">
+        {/* Grille LED entonnoir */}
+        <div className="led-grid pointer-events-none absolute inset-x-0 top-0 h-80" aria-hidden="true" />
+        {/* Glow radial */}
         <div
-          className="pointer-events-none absolute -inset-x-20 top-0 h-96"
-          style={{ background: 'radial-gradient(ellipse 80% 70% at 50% -5%, rgba(0,212,255,0.13), transparent)' }}
+          className="pointer-events-none absolute -inset-x-20 top-0 h-80"
+          style={{ background: 'radial-gradient(ellipse 70% 60% at 50% -5%, rgba(0,212,255,0.16), transparent)' }}
           aria-hidden="true"
         />
+
         <p
-          className="anim-fade-up relative mb-4 text-xs font-semibold uppercase tracking-[0.28em] text-cyan"
+          className="anim-fade-up relative mb-4 text-[11px] font-bold uppercase tracking-[0.3em] text-cyan"
           style={{ fontFamily: 'var(--font-heading)' }}
         >
-          NEOSENIA — Écrans LED transparents
+          NEOSENIA — Écrans LED B2B
         </p>
         <h1
-          className="anim-fade-up anim-fade-up-2 relative font-bold uppercase leading-[1.02] tracking-tight text-primary"
-          style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.75rem, 5.5vw, 3.25rem)' }}
+          className="anim-fade-up anim-fade-up-2 relative font-bold leading-[1.04] tracking-tight text-primary"
+          style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.9rem, 5.5vw, 3.5rem)' }}
         >
-          Votre vitrine devient<br />
-          <span className="text-cyan">un écran LED transparent</span>
+          Combien coûte votre<br />
+          <span className="text-cyan">écran LED tout compris&nbsp;?</span>
         </h1>
         <p
-          className="anim-fade-up anim-fade-up-3 relative mt-5 max-w-lg text-sm leading-relaxed text-muted sm:text-base"
+          className="anim-fade-up anim-fade-up-3 relative mt-5 max-w-xl text-sm leading-relaxed text-muted sm:text-[15px]"
           style={{ fontFamily: 'var(--font-body)' }}
         >
-          Prix livré exact en{' '}
-          <span className="font-medium text-primary">30 secondes</span> —
-          transport, douane et TVA inclus.{' '}
-          <span className="font-medium text-primary">Garantie 5 ans.</span>{' '}
-          Devis ferme sous 48 h, sans engagement.
+          Prix HT livré en <span className="font-semibold text-primary">30 secondes</span> — transport,
+          dédouanement et TVA 20 % déjà inclus dans le tarif affiché.
+          Devis ferme sous 48 h, verrouillé 7 jours.{' '}
+          <span className="font-semibold text-primary">Garantie 5 ans constructeur.</span>
         </p>
+
+        {/* Trust inline */}
+        <div className="anim-fade-up anim-fade-up-4 relative mt-7 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted">
+          {[
+            { icon: '✓', text: 'DDP France inclus' },
+            { icon: '✓', text: 'Prix verrouillé 7 jours' },
+            { icon: '✓', text: 'Garantie 5 ans' },
+            { icon: '✓', text: '200+ installations' },
+          ].map(({ icon, text }) => (
+            <span key={text} className="flex items-center gap-1.5">
+              <span className="text-cyan">{icon}</span>
+              {text}
+            </span>
+          ))}
+        </div>
       </header>
 
       {/* ── Bandeau stats — marquee ── */}

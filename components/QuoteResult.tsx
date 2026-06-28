@@ -3,121 +3,157 @@
 import { useState } from 'react';
 import { eur, type Family, type Quote } from '@/lib/pricing';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function genererDevisPDF(quote: any) {
   const { jsPDF } = await import('jspdf');
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
 
-  const CYAN = [0, 212, 255] as [number, number, number];
-  const DARK = [10, 10, 15] as [number, number, number];
-  const GREY = [148, 148, 160] as [number, number, number];
+  /* Palette */
+  const SLATE9: [number,number,number] = [15, 23, 42];
+  const SLATE5: [number,number,number] = [100, 116, 139];
+  const CYAN: [number,number,number] = [0, 212, 255];
+  const WHITE: [number,number,number] = [255, 255, 255];
+  const LIGHT: [number,number,number] = [248, 250, 252];
 
-  /* Fond */
-  doc.setFillColor(...DARK);
+  /* Fond blanc */
+  doc.setFillColor(...WHITE);
   doc.rect(0, 0, 210, 297, 'F');
 
-  /* Barre accent top */
+  /* Barre cyan top */
   doc.setFillColor(...CYAN);
-  doc.rect(0, 0, 210, 2, 'F');
+  doc.rect(0, 0, 210, 3, 'F');
 
   /* En-tête */
-  doc.setTextColor(...CYAN);
-  doc.setFontSize(22);
+  doc.setFillColor(...SLATE9);
+  doc.rect(0, 3, 210, 30, 'F');
+  doc.setTextColor(...WHITE);
+  doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
-  doc.text('NEOSENIA', 20, 24);
-  doc.setTextColor(...GREY);
-  doc.setFontSize(9);
+  doc.text('NEOSENIA', 20, 18);
+  doc.setFontSize(8.5);
   doc.setFont('helvetica', 'normal');
-  doc.text('Écrans LED transparents · contact@neosenia.com', 20, 31);
+  doc.setTextColor(148, 163, 184);
+  doc.text('Écrans LED transparents · contact@neosenia.com · neosenia.com', 20, 26);
 
-  /* Titre devis */
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(16);
+  /* Badge DEVIS INDICATIF */
+  doc.setTextColor(...WHITE);
+  doc.setFontSize(7.5);
   doc.setFont('helvetica', 'bold');
-  doc.text('Devis indicatif', 20, 48);
-  doc.setFontSize(11);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(...GREY);
-  const today = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
-  doc.text(`Généré le ${today}`, 20, 56);
+  const dateStr = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+  doc.text(`DEVIS INDICATIF · ${dateStr.toUpperCase()}`, 130, 18, { align: 'right' });
 
-  /* Séparateur */
-  doc.setDrawColor(...CYAN);
-  doc.setLineWidth(0.4);
-  doc.line(20, 62, 190, 62);
-
-  /* Produit */
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(14);
+  /* Zone produit */
+  doc.setFillColor(...LIGHT);
+  doc.rect(0, 33, 210, 24, 'F');
+  doc.setTextColor(...SLATE9);
+  doc.setFontSize(15);
   doc.setFont('helvetica', 'bold');
-  doc.text(quote.label ?? 'Écran LED NEOSENIA', 20, 74);
+  doc.text(quote.label ?? 'Écran LED NEOSENIA', 20, 47);
+  if (quote.status === 'ok' && quote.priceHtEur) {
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...SLATE5);
+    doc.text(`Surface : ${quote.surfaceM2} m² · Garantie ${quote.warrantyYears} ans`, 20, 54);
+  }
 
   /* Prix */
   if (quote.status === 'ok' && quote.priceHtEur) {
-    doc.setFontSize(28);
-    doc.setTextColor(...CYAN);
-    doc.text(`${eur(quote.priceHtEur)} HT`, 20, 90);
+    doc.setFillColor(...CYAN);
+    doc.rect(0, 57, 210, 0.5, 'F');
+
+    doc.setTextColor(...SLATE9);
+    doc.setFontSize(32);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${eur(quote.priceHtEur)}`, 20, 78);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...SLATE5);
+    doc.text('HT · transport + douane + TVA 20 % inclus', 20, 86);
+
     doc.setFontSize(12);
-    doc.setTextColor(...GREY);
-    doc.text(`soit ${eur(quote.priceTtcEur)} TTC (TVA 20 % incluse)`, 20, 98);
+    doc.setTextColor(...SLATE9);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${eur(quote.priceTtcEur)} TTC`, 20, 95);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(...SLATE5);
+    doc.text('Prix verrouillé 7 jours sur acompte 30 %', 20, 101);
 
-    /* Récap specs */
-    doc.setLineWidth(0.2);
-    doc.setDrawColor(255, 255, 255, 0.1);
-    doc.line(20, 108, 190, 108);
+    /* Séparateur */
+    doc.setFillColor(226, 232, 240);
+    doc.rect(20, 108, 170, 0.4, 'F');
 
+    /* Détails */
+    doc.setFontSize(9);
     const rows: [string, string][] = [
       ['Surface', `${quote.surfaceM2} m²`],
-      ['Garantie', `${quote.warrantyYears} ans constructeur`],
+      ['Garantie constructeur', `${quote.warrantyYears} ans`],
     ];
-    if (quote.transitDays) {
-      rows.push(['Délai porte-à-porte', `≈ ${quote.transitDays[0]}–${quote.transitDays[1]} jours`]);
-    }
+    if (quote.transitDays) rows.push(['Délai porte-à-porte', `≈ ${quote.transitDays[0]}–${quote.transitDays[1]} jours ouvrés`]);
     if (quote.resolution) rows.push(['Résolution', `${quote.resolution} px`]);
 
     let y = 118;
     rows.forEach(([k, v]) => {
-      doc.setFontSize(10);
-      doc.setTextColor(...GREY);
+      doc.setTextColor(...SLATE5);
+      doc.setFont('helvetica', 'normal');
       doc.text(k, 20, y);
-      doc.setTextColor(255, 255, 255);
-      doc.text(v, 100, y);
+      doc.setTextColor(...SLATE9);
+      doc.setFont('helvetica', 'bold');
+      doc.text(v, 110, y);
       y += 9;
     });
 
     /* Ce qui est inclus */
-    doc.setLineWidth(0.2);
-    doc.line(20, y + 4, 190, y + 4);
-    y += 14;
-    doc.setFontSize(11);
-    doc.setTextColor(...CYAN);
+    doc.setFillColor(...LIGHT);
+    doc.roundedRect(20, y + 6, 170, 58, 3, 3, 'F');
+    doc.setFillColor(...CYAN);
+    doc.rect(20, y + 6, 3, 58, 'F');
+
+    doc.setTextColor(...SLATE9);
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
-    doc.text('Inclus dans ce prix', 20, y);
-    y += 8;
+    doc.text('Inclus dans ce prix', 30, y + 18);
+
+    const inclus = [
+      'Fret ferroviaire Chine → France (DDP)',
+      'Dédouanement + frais de port',
+      'TVA 20 % française',
+      'Contrôleur Nova TB40 + câblage',
+      'Support technique NEOSENIA 5 ans',
+    ];
     doc.setFont('helvetica', 'normal');
-    const inclus = ['Fret ferroviaire Chine → France', 'Dédouanement + DDP France', 'TVA 20 %', 'Contrôleur LED + câblage', 'Support technique NEOSENIA'];
-    inclus.forEach((it) => {
-      doc.setFontSize(9.5);
-      doc.setTextColor(255, 255, 255);
-      doc.text(`✓  ${it}`, 24, y);
-      y += 7.5;
+    doc.setFontSize(9);
+    inclus.forEach((it, i) => {
+      doc.setTextColor(0, 180, 220);
+      doc.text('✓', 30, y + 28 + i * 8);
+      doc.setTextColor(...SLATE9);
+      doc.text(it, 37, y + 28 + i * 8);
     });
+    y += 72;
+
+    /* Certifications */
+    doc.setFontSize(8);
+    doc.setTextColor(...SLATE5);
+    doc.text('Certifié : CE · RoHS · FCC · IP54', 20, y + 14);
   }
 
-  /* Avertissement */
-  doc.setFontSize(8.5);
-  doc.setTextColor(...GREY);
-  const note = 'Ce document est une estimation indicative. Votre devis ferme, établi après mesure de votre vitrine, vous est adressé sous 48 h. Sans engagement.';
+  /* Avertissement légal */
+  doc.setFillColor(241, 245, 249);
+  doc.rect(0, 258, 210, 24, 'F');
+  doc.setFontSize(7.5);
+  doc.setTextColor(...SLATE5);
+  const note = 'Ce document est une estimation indicative basée sur notre grille tarifaire. Votre devis ferme — établi après mesure de votre vitrine — vous est remis sous 48 h. Prix en €HT. TVA 20 % applicable. Sans engagement.';
   const lines = doc.splitTextToSize(note, 170);
-  doc.text(lines, 20, 255);
+  doc.text(lines, 20, 264);
 
   /* Footer */
+  doc.setFillColor(...SLATE9);
+  doc.rect(0, 284, 210, 13, 'F');
   doc.setFillColor(...CYAN);
-  doc.rect(0, 287, 210, 10, 'F');
-  doc.setFontSize(8);
-  doc.setTextColor(10, 10, 15);
-  doc.setFont('helvetica', 'bold');
-  doc.text('NEOSEN LIMITED (trading as NEOSENIA)  ·  Dublin, Irlande  ·  contact@neosenia.com', 20, 293);
+  doc.rect(0, 284, 3, 13, 'F');
+  doc.setFontSize(7.5);
+  doc.setTextColor(148, 163, 184);
+  doc.setFont('helvetica', 'normal');
+  doc.text('NEOSEN LIMITED (trading as NEOSENIA)  ·  Dublin, Irlande  ·  contact@neosenia.com  ·  neosenia.com', 8, 292);
 
   doc.save(`devis-neosenia-${Date.now()}.pdf`);
 }
@@ -126,11 +162,11 @@ export function QuoteResult({ quote, family }: { quote: Quote; family?: Family }
   const [techOpen, setTechOpen] = useState(false);
   const [inclusOpen, setInclusOpen] = useState(false);
 
-  /* ── Pas de produit sélectionné ── */
+  /* ── Pas de produit ── */
   if (quote.status === 'error') {
     return (
-      <div className="flex min-h-[200px] items-center justify-center rounded-2xl border border-border-card bg-card p-8 text-muted">
-        Sélectionnez une technologie pour commencer.
+      <div className="flex min-h-[200px] items-center justify-center rounded-2xl border border-border-card bg-card p-8 text-sm text-muted">
+        Sélectionnez un type d'écran pour voir le prix.
       </div>
     );
   }
@@ -138,22 +174,21 @@ export function QuoteResult({ quote, family }: { quote: Quote; family?: Family }
   /* ── Sur devis ── */
   if (quote.status === 'sur_devis') {
     return (
-      <div className="rounded-2xl border border-border-card bg-card p-6 sm:p-8">
-        <span className="inline-block rounded-full border border-gold/30 bg-gold/10 px-3 py-0.5 text-xs font-semibold text-gold">
-          Sur devis
+      <div className="quote-light p-6 sm:p-8">
+        <div className="h-1 w-full rounded-full bg-gradient-to-r from-gold via-gold/60 to-transparent -mx-6 -mt-6 mb-6 w-[calc(100%+3rem)]" />
+        <span className="inline-block rounded-full border border-gold/40 bg-gold/10 px-3 py-0.5 text-xs font-bold uppercase tracking-wider text-gold">
+          Sur devis personnalisé
         </span>
-        <h2
-          className="mt-4 text-xl font-semibold text-primary"
-          style={{ fontFamily: 'var(--font-heading)' }}
-        >
+        <h2 className="mt-4 text-lg font-bold text-slate-900" style={{ fontFamily: 'var(--font-heading)' }}>
           {quote.label}
         </h2>
-        <p className="mt-3 leading-relaxed text-muted">
+        <p className="mt-3 text-sm leading-relaxed text-slate-500">
           {quote.reason
-            ? `Cette configuration (${quote.reason}) dépasse notre grille standard. Nous établissons un prix sur mesure sous 48 h.`
-            : (quote.note ?? 'Configuration sur mesure — prix établi sur devis personnalisé.')}
+            ? `Cette configuration (${quote.reason}) dépasse notre grille standard. Votre devis ferme est établi sous 48 h.`
+            : (quote.note ?? 'Configuration sur mesure — nous établissons votre prix sous 48 h.')}
         </p>
-        <CtaEtude />
+        <CtaDevis light />
+        <p className="mt-3 text-center text-xs text-slate-400">Sans engagement · mesures offertes · réponse sous 48 h</p>
       </div>
     );
   }
@@ -162,153 +197,161 @@ export function QuoteResult({ quote, family }: { quote: Quote; family?: Family }
   const transit = quote.transitDays;
 
   return (
-    <div className="anim-fade-in overflow-hidden rounded-2xl border border-border-card bg-card">
-      {/* Barre accent cyan — marqueur visuel fort */}
-      <div className="h-0.5 w-full bg-gradient-to-r from-cyan via-cyan/60 to-transparent" />
+    <div className="quote-light">
+      {/* Barre accent cyan pleine largeur */}
+      <div className="h-1.5 bg-gradient-to-r from-cyan via-cyan/70 to-transparent" />
 
       <div className="p-6 sm:p-8">
-      {/* Badges */}
-      <div className="flex flex-wrap gap-2">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan/25 bg-cyan/10 px-3 py-0.5 text-xs font-semibold text-cyan">
-          <span className="h-1.5 w-1.5 rounded-full bg-cyan" />
-          Prix livré tout compris
-        </span>
-        {quote.confidence && (
-          <span className="rounded-full border border-gold/30 bg-gold/10 px-3 py-0.5 text-xs font-semibold text-gold">
-            À confirmer sur devis
+        {/* Header badges */}
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-0.5 text-xs font-semibold text-emerald-700">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            Prix livré DDP tout compris
           </span>
-        )}
-        {transit && (
-          <span className="rounded-full border border-border-card px-3 py-0.5 text-xs text-muted">
-            ≈&nbsp;{transit[0]}–{transit[1]}&nbsp;j livraison
-          </span>
-        )}
-      </div>
-
-      {/* Prix héros */}
-      <div className="mt-5">
-        <div
-          className="text-5xl font-bold tabular-nums text-cyan sm:text-6xl"
-          style={{ fontFamily: 'var(--font-display)' }}
-        >
-          {eur(quote.priceHtEur)}
+          {quote.confidence && (
+            <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-0.5 text-xs font-semibold text-amber-700">
+              À confirmer sur devis
+            </span>
+          )}
+          {transit && (
+            <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-0.5 text-xs text-slate-500">
+              ≈ {transit[0]}–{transit[1]} j livraison
+            </span>
+          )}
         </div>
-        <p className="mt-1 text-sm text-muted">
-          HT · transport + douane + TVA 20 % inclus
-        </p>
-        <p className="mt-2.5 text-base">
-          <span className="font-semibold text-primary">{eur(quote.priceTtcEur)}&nbsp;TTC</span>
-          <span className="ml-2 text-sm text-muted">— rien à ajouter à la livraison</span>
-        </p>
-      </div>
 
-      {/* Specs essentielles (surface, garantie) */}
-      <div className="mt-6 grid grid-cols-3 gap-2">
-        <SpecPill label="Surface" value={`${quote.surfaceM2} m²`} />
-        <SpecPill label="Garantie" value={`${quote.warrantyYears} ans`} highlight />
-        {transit && (
-          <SpecPill
-            label="Délai porte-à-porte"
-            value={`≈ ${transit[0]}–${transit[1]} j`}
-            hint="Fabrication 15–20 j ouvrés + transport ferroviaire ~35 j"
-          />
-        )}
-      </div>
-
-      {/* Détails techniques — repliables (jargon secondaire) */}
-      <div className="mt-4">
-        <button
-          type="button"
-          onClick={() => setTechOpen((o) => !o)}
-          className="flex items-center gap-1.5 text-xs text-muted transition-colors hover:text-primary"
-        >
-          <svg
-            className={`chevron h-3.5 w-3.5 transition-transform duration-250 ${techOpen ? 'rotate-180' : ''}`}
-            viewBox="0 0 12 12" fill="none"
+        {/* Prix héros */}
+        <div className="mt-6">
+          <p className="quote-light-label mb-1">Prix HT estimé</p>
+          <div
+            className="quote-light-price text-5xl font-bold tabular-nums sm:text-6xl"
+            style={{ fontFamily: 'var(--font-display)', letterSpacing: '-0.02em' }}
           >
-            <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          Détails techniques
-        </button>
-        {techOpen && (
-          <div className="mt-3 grid grid-cols-2 gap-2 text-sm sm:grid-cols-3">
-            <TechRow label="Définition" value={`${quote.resolution} px`} />
-            <TechRow label="Dalles" value={`${quote.panelCount}`} />
-            <TechRow label="Contrôleur" value={quote.controller} />
+            {eur(quote.priceHtEur)}
           </div>
-        )}
-      </div>
+          <p className="mt-1.5 text-sm text-slate-500">
+            Transport DDP + douane + TVA 20 % inclus
+          </p>
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className="text-xl font-bold text-slate-800">{eur(quote.priceTtcEur)}</span>
+            <span className="text-sm text-slate-500">TTC · rien à ajouter à la livraison</span>
+          </div>
+        </div>
 
-      {/* Inclus / Non inclus — repliable */}
-      {family?.livraison && (
-        <div className="mt-4 border-t border-border pt-4">
+        {/* Séparateur */}
+        <div className="quote-light-divider my-6 border-t" />
+
+        {/* Specs grid */}
+        <div className="grid grid-cols-3 gap-2">
+          <SpecPill label="Surface" value={`${quote.surfaceM2} m²`} />
+          <SpecPill label="Garantie" value={`${quote.warrantyYears} ans`} accent />
+          {transit ? (
+            <SpecPill label="Délai" value={`≈ ${transit[0]}–${transit[1]} j`} hint="Fabrication + fret ferroviaire" />
+          ) : (
+            <SpecPill label="Livraison" value="Sur devis" />
+          )}
+        </div>
+
+        {/* Certifications */}
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {['CE', 'RoHS', 'FCC', 'IP54'].map(cert => (
+            <span key={cert} className="rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-bold tracking-widest text-slate-400">
+              {cert}
+            </span>
+          ))}
+        </div>
+
+        {/* Détails techniques */}
+        <div className="mt-4">
           <button
             type="button"
-            onClick={() => setInclusOpen((o) => !o)}
-            className="flex w-full items-center justify-between text-xs text-muted transition-colors hover:text-primary"
+            onClick={() => setTechOpen(o => !o)}
+            className="flex cursor-pointer items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-slate-700"
           >
-            <span className="flex items-center gap-1.5">
-              <svg className={`chevron h-3.5 w-3.5 transition-transform duration-250 ${inclusOpen ? 'rotate-180' : ''}`} viewBox="0 0 12 12" fill="none">
-                <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              Ce qui est inclus / non inclus
-            </span>
-            <span className="text-muted">{inclusOpen ? 'Réduire' : 'Voir le détail'}</span>
+            <svg className={`chevron h-3.5 w-3.5 transition-transform duration-200 ${techOpen ? 'rotate-180' : ''}`} viewBox="0 0 12 12" fill="none">
+              <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Détails techniques
           </button>
-          {inclusOpen && (
-            <div className="mt-4 grid gap-5 sm:grid-cols-2">
-              <IncludeList title="Inclus" items={family.livraison.inclus} positive />
-              <IncludeList title="En option / sur devis" items={family.livraison.non_inclus} />
+          {techOpen && (
+            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+              <TechRow label="Définition" value={`${quote.resolution} px`} />
+              <TechRow label="Dalles" value={`${quote.panelCount}`} />
+              <TechRow label="Contrôleur" value={quote.controller} />
             </div>
           )}
         </div>
-      )}
 
-      {/* Réglementation */}
-      {family?.elec?.regulation_fr && (
-        <p className="mt-5 rounded-xl border border-border-card bg-bg px-4 py-3 text-xs text-muted">
-          <span className="inline-flex items-start gap-2">
-            <svg className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-              <line x1="12" y1="9" x2="12" y2="13" />
-              <line x1="12" y1="17" x2="12.01" y2="17" />
+        {/* Inclus / Non inclus */}
+        {family?.livraison && (
+          <div className="mt-4 border-t border-slate-100 pt-4">
+            <button
+              type="button"
+              onClick={() => setInclusOpen(o => !o)}
+              className="flex w-full cursor-pointer items-center justify-between text-xs text-slate-400 transition-colors hover:text-slate-700"
+            >
+              <span className="flex items-center gap-1.5">
+                <svg className={`chevron h-3.5 w-3.5 transition-transform duration-200 ${inclusOpen ? 'rotate-180' : ''}`} viewBox="0 0 12 12" fill="none">
+                  <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Ce qui est inclus / non inclus
+              </span>
+              <span>{inclusOpen ? 'Réduire' : 'Voir le détail'}</span>
+            </button>
+            {inclusOpen && (
+              <div className="mt-4 grid gap-5 sm:grid-cols-2">
+                <IncludeList title="Inclus" items={family.livraison.inclus} positive />
+                <IncludeList title="En option / sur devis" items={family.livraison.non_inclus} />
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Réglementation */}
+        {family?.elec?.regulation_fr && (
+          <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800">
+            <span className="inline-flex items-start gap-2">
+              <svg className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+              {family.elec.regulation_fr}
+            </span>
+          </div>
+        )}
+
+        {/* CTA */}
+        <div className="quote-light-divider mt-6 border-t pt-6">
+          <CtaDevis light />
+          <button
+            type="button"
+            onClick={() => genererDevisPDF(quote)}
+            className="quote-light-secondary mt-3 flex w-full cursor-pointer items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium"
+            style={{ fontFamily: 'var(--font-heading)' }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
             </svg>
-            {family.elec.regulation_fr}
-          </span>
-        </p>
-      )}
-
-      {/* CTA */}
-      <CtaEtude />
-      <button
-        type="button"
-        onClick={() => genererDevisPDF(quote)}
-        className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-border-card py-3 text-sm text-muted transition-colors hover:border-cyan/30 hover:text-primary"
-        style={{ fontFamily: 'var(--font-heading)' }}
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-        </svg>
-        Télécharger le devis PDF
-      </button>
-      <p className="mt-2 text-center text-xs text-muted">
-        Devis ferme sous&nbsp;48&nbsp;h · sans engagement · mesures offertes
-      </p>
-      </div>{/* fin padding wrapper */}
+            Télécharger ce devis en PDF
+          </button>
+          <p className="mt-3 text-center text-xs text-slate-400">
+            Devis ferme sous 48 h · sans engagement · mesures offertes
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
 
 /* ── Sous-composants ── */
 
-function SpecPill({ label, value, hint, highlight }: { label: string; value: string; hint?: string; highlight?: boolean }) {
+function SpecPill({ label, value, hint, accent }: { label: string; value: string; hint?: string; accent?: boolean }) {
   return (
-    <div
-      className="rounded-xl border border-border-card bg-bg px-3 py-2.5"
-      title={hint}
-    >
-      <p className="truncate text-[10px] leading-tight text-muted">{label}</p>
-      <p className={`mt-0.5 text-sm font-semibold leading-tight ${highlight ? 'text-gold' : 'text-primary'}`}>
+    <div className="quote-light-pill" title={hint}>
+      <p className="quote-light-label truncate">{label}</p>
+      <p className={`mt-0.5 text-sm font-bold leading-tight ${accent ? 'text-emerald-600' : 'text-slate-800'}`}>
         {value}
       </p>
     </div>
@@ -317,9 +360,9 @@ function SpecPill({ label, value, hint, highlight }: { label: string; value: str
 
 function TechRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-border-card bg-bg px-3 py-2">
-      <p className="text-xs text-muted">{label}</p>
-      <p className="mt-0.5 font-mono text-xs text-primary">{value}</p>
+    <div className="rounded-lg border border-slate-100 bg-slate-50 px-3 py-2">
+      <p className="text-xs text-slate-400">{label}</p>
+      <p className="mt-0.5 font-mono text-xs font-medium text-slate-700">{value}</p>
     </div>
   );
 }
@@ -327,19 +370,16 @@ function TechRow({ label, value }: { label: string; value: string }) {
 function IncludeList({ title, items, positive }: { title: string; items: string[]; positive?: boolean }) {
   return (
     <div>
-      <p
-        className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted"
-        style={{ fontFamily: 'var(--font-heading)' }}
-      >
+      <p className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500" style={{ fontFamily: 'var(--font-heading)' }}>
         {title}
       </p>
       <ul className="space-y-2">
         {items.map((it) => (
           <li key={it} className="flex gap-2.5 text-sm">
-            <span className={`mt-0.5 shrink-0 ${positive ? 'text-cyan' : 'text-muted'}`}>
+            <span className={`mt-0.5 shrink-0 font-bold ${positive ? 'text-emerald-500' : 'text-slate-400'}`}>
               {positive ? '✓' : '+'}
             </span>
-            <span className="text-muted leading-snug">{it}</span>
+            <span className="text-slate-600 leading-snug">{it}</span>
           </li>
         ))}
       </ul>
@@ -347,15 +387,15 @@ function IncludeList({ title, items, positive }: { title: string; items: string[
   );
 }
 
-function CtaEtude() {
+function CtaDevis({ light }: { light?: boolean }) {
   return (
     <a
-      href="mailto:contact@neosenia.fr?subject=Étude%20de%20vitrine%20LED&body=Bonjour%2C%20je%20souhaite%20recevoir%20mon%20devis%20ferme%20pour%20ma%20vitrine."
-      className="cta-glow mt-7 flex items-center justify-center gap-3 rounded-full bg-cyan px-6 py-4 font-bold text-bg transition-opacity"
-      style={{ fontFamily: 'var(--font-heading)', fontSize: '1rem' }}
+      href="mailto:contact@neosenia.com?subject=Devis%20écran%20LED%20NEOSENIA&body=Bonjour%2C%20je%20souhaite%20recevoir%20mon%20devis%20ferme%20pour%20mon%20projet%20d%27écran%20LED."
+      className="quote-light-cta mt-6 flex items-center justify-center gap-3 rounded-full px-6 py-4 font-bold"
+      style={{ fontFamily: 'var(--font-heading)', fontSize: '0.95rem' }}
     >
       <span>Obtenir mon devis ferme — 48 h</span>
-      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-bg/15">
+      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-black/10">
         <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
           <path d="M2 6.5h9M7.5 2l4 4.5-4 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
