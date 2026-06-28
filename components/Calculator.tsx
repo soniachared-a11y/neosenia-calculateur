@@ -1,8 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import Image from 'next/image';
-import { computeQuote, getFamilies, getFamily, num } from '@/lib/pricing';
+import { computeQuote, getFamilies, getFamily } from '@/lib/pricing';
 import { QuoteResult } from './QuoteResult';
 import { RoiSimulator } from './RoiSimulator';
 
