@@ -3,6 +3,125 @@
 import { useState } from 'react';
 import { eur, type Family, type Quote } from '@/lib/pricing';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function genererDevisPDF(quote: any) {
+  const { jsPDF } = await import('jspdf');
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+
+  const CYAN = [0, 212, 255] as [number, number, number];
+  const DARK = [10, 10, 15] as [number, number, number];
+  const GREY = [148, 148, 160] as [number, number, number];
+
+  /* Fond */
+  doc.setFillColor(...DARK);
+  doc.rect(0, 0, 210, 297, 'F');
+
+  /* Barre accent top */
+  doc.setFillColor(...CYAN);
+  doc.rect(0, 0, 210, 2, 'F');
+
+  /* En-tête */
+  doc.setTextColor(...CYAN);
+  doc.setFontSize(22);
+  doc.setFont('helvetica', 'bold');
+  doc.text('NEOSENIA', 20, 24);
+  doc.setTextColor(...GREY);
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Écrans LED transparents · contact@neosenia.com', 20, 31);
+
+  /* Titre devis */
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(16);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Devis indicatif', 20, 48);
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...GREY);
+  const today = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+  doc.text(`Généré le ${today}`, 20, 56);
+
+  /* Séparateur */
+  doc.setDrawColor(...CYAN);
+  doc.setLineWidth(0.4);
+  doc.line(20, 62, 190, 62);
+
+  /* Produit */
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.text(quote.label ?? 'Écran LED NEOSENIA', 20, 74);
+
+  /* Prix */
+  if (quote.status === 'ok' && quote.priceHtEur) {
+    doc.setFontSize(28);
+    doc.setTextColor(...CYAN);
+    doc.text(`${eur(quote.priceHtEur)} HT`, 20, 90);
+    doc.setFontSize(12);
+    doc.setTextColor(...GREY);
+    doc.text(`soit ${eur(quote.priceTtcEur)} TTC (TVA 20 % incluse)`, 20, 98);
+
+    /* Récap specs */
+    doc.setLineWidth(0.2);
+    doc.setDrawColor(255, 255, 255, 0.1);
+    doc.line(20, 108, 190, 108);
+
+    const rows: [string, string][] = [
+      ['Surface', `${quote.surfaceM2} m²`],
+      ['Garantie', `${quote.warrantyYears} ans constructeur`],
+    ];
+    if (quote.transitDays) {
+      rows.push(['Délai porte-à-porte', `≈ ${quote.transitDays[0]}–${quote.transitDays[1]} jours`]);
+    }
+    if (quote.resolution) rows.push(['Résolution', `${quote.resolution} px`]);
+
+    let y = 118;
+    rows.forEach(([k, v]) => {
+      doc.setFontSize(10);
+      doc.setTextColor(...GREY);
+      doc.text(k, 20, y);
+      doc.setTextColor(255, 255, 255);
+      doc.text(v, 100, y);
+      y += 9;
+    });
+
+    /* Ce qui est inclus */
+    doc.setLineWidth(0.2);
+    doc.line(20, y + 4, 190, y + 4);
+    y += 14;
+    doc.setFontSize(11);
+    doc.setTextColor(...CYAN);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Inclus dans ce prix', 20, y);
+    y += 8;
+    doc.setFont('helvetica', 'normal');
+    const inclus = ['Fret ferroviaire Chine → France', 'Dédouanement + DDP France', 'TVA 20 %', 'Contrôleur LED + câblage', 'Support technique NEOSENIA'];
+    inclus.forEach((it) => {
+      doc.setFontSize(9.5);
+      doc.setTextColor(255, 255, 255);
+      doc.text(`✓  ${it}`, 24, y);
+      y += 7.5;
+    });
+  }
+
+  /* Avertissement */
+  doc.setFontSize(8.5);
+  doc.setTextColor(...GREY);
+  const note = 'Ce document est une estimation indicative. Votre devis ferme, établi après mesure de votre vitrine, vous est adressé sous 48 h. Sans engagement.';
+  const lines = doc.splitTextToSize(note, 170);
+  doc.text(lines, 20, 255);
+
+  /* Footer */
+  doc.setFillColor(...CYAN);
+  doc.rect(0, 287, 210, 10, 'F');
+  doc.setFontSize(8);
+  doc.setTextColor(10, 10, 15);
+  doc.setFont('helvetica', 'bold');
+  doc.text('NEOSEN LIMITED (trading as NEOSENIA)  ·  Dublin, Irlande  ·  contact@neosenia.com', 20, 293);
+
+  doc.save(`devis-neosenia-${Date.now()}.pdf`);
+}
+
 export function QuoteResult({ quote, family }: { quote: Quote; family?: Family }) {
   const [techOpen, setTechOpen] = useState(false);
   const [inclusOpen, setInclusOpen] = useState(false);
@@ -161,7 +280,18 @@ export function QuoteResult({ quote, family }: { quote: Quote; family?: Family }
 
       {/* CTA */}
       <CtaEtude />
-      <p className="mt-3 text-center text-xs text-muted">
+      <button
+        type="button"
+        onClick={() => genererDevisPDF(quote)}
+        className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-border-card py-3 text-sm text-muted transition-colors hover:border-cyan/30 hover:text-primary"
+        style={{ fontFamily: 'var(--font-heading)' }}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Télécharger le devis PDF
+      </button>
+      <p className="mt-2 text-center text-xs text-muted">
         Devis ferme sous&nbsp;48&nbsp;h · sans engagement · mesures offertes
       </p>
       </div>{/* fin padding wrapper */}

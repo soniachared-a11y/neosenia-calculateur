@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Calculator } from '@/components/Calculator';
 
 const jsonLd = {
@@ -50,6 +51,17 @@ export default function Home() {
         </p>
       </header>
 
+      {/* ── Bandeau stats — marquee ── */}
+      <div className="border-b border-t border-border overflow-hidden py-3">
+        <div className="marquee-track flex w-max gap-12 text-xs font-semibold uppercase tracking-[0.2em]" style={{ fontFamily: 'var(--font-heading)' }}>
+          {['200+ installations', 'DDP France inclus', 'Prix verrouillé 7 j', 'Garantie 5 ans constructeur', 'Livraison ~50 j', 'Certifié CE · RoHS · FCC', '200+ installations', 'DDP France inclus', 'Prix verrouillé 7 j', 'Garantie 5 ans constructeur', 'Livraison ~50 j', 'Certifié CE · RoHS · FCC'].map((item, i) => (
+            <span key={i} className={i % 2 === 0 ? 'text-cyan' : 'text-muted'}>
+              {item}
+            </span>
+          ))}
+        </div>
+      </div>
+
       {/* ── Configurateur ── */}
       <section className="mx-auto max-w-6xl px-5 pb-16">
         <Calculator />
@@ -92,6 +104,34 @@ export default function Home() {
                 delay={200}
               />
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Cross-sell ── */}
+      <section className="border-t border-border">
+        <div className="mx-auto max-w-6xl px-5 py-14 sm:py-20">
+          <p className="anim-fade-up text-xs font-semibold uppercase tracking-[0.28em] text-cyan" style={{ fontFamily: 'var(--font-heading)' }}>
+            Aller plus loin
+          </p>
+          <h2 className="anim-fade-up anim-fade-up-2 mt-3 text-xl font-bold text-primary sm:text-2xl" style={{ fontFamily: 'var(--font-heading)' }}>
+            Maximisez votre investissement
+          </h2>
+          <div className="mt-8 grid gap-5 sm:grid-cols-2">
+            <CrossSellCard
+              href="/regie-publicitaire"
+              eyebrow="Programme partenaire"
+              title="Régie publicitaire locale"
+              body="NEOSENIA démarche les annonceurs pour vous. 65 % du chiffre d'affaires versé chaque mois — sans rien gérer."
+              accent="gold"
+            />
+            <CrossSellCard
+              href="/pack-ugc"
+              eyebrow="Service vidéo"
+              title="Pack 5 vidéos UGC"
+              body="5 vidéos pro (motion design, voix off) calibrées pour votre vitrine. Livraison 7–10 jours. 1 800 € HT."
+              accent="cyan"
+            />
           </div>
         </div>
       </section>
@@ -172,5 +212,35 @@ function IconClock() {
       <circle cx="12" cy="12" r="9" />
       <polyline points="12 7 12 12 15 15" />
     </svg>
+  );
+}
+
+function CrossSellCard({ href, eyebrow, title, body, accent }: {
+  href: string; eyebrow: string; title: string; body: string; accent: 'gold' | 'cyan';
+}) {
+  const isCyan = accent === 'cyan';
+  return (
+    <Link
+      href={href}
+      className="orb-card card-hover group block rounded-2xl border border-border-card bg-card p-6 no-underline transition-colors hover:border-cyan/20"
+    >
+      <div className="orb-bg" aria-hidden><div className="orb orb-1" /><div className="orb orb-2" /></div>
+      <div className="relative z-10">
+        <p
+          className={`text-xs font-semibold uppercase tracking-[0.2em] ${isCyan ? 'text-cyan' : 'text-gold'}`}
+          style={{ fontFamily: 'var(--font-heading)' }}
+        >
+          {eyebrow}
+        </p>
+        <h3 className="mt-2.5 text-lg font-bold text-primary" style={{ fontFamily: 'var(--font-heading)' }}>
+          {title}
+        </h3>
+        <p className="mt-2 text-sm leading-relaxed text-muted">{body}</p>
+        <span className={`mt-5 inline-flex items-center gap-1.5 text-sm font-semibold ${isCyan ? 'text-cyan' : 'text-gold'}`} style={{ fontFamily: 'var(--font-heading)' }}>
+          En savoir plus
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </span>
+      </div>
+    </Link>
   );
 }
