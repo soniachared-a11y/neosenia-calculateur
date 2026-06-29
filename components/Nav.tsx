@@ -53,13 +53,20 @@ export function Nav() {
           })}
         </nav>
 
-        {/* CTA */}
+        {/* CTA nav premium */}
         <a
           href="mailto:contact@neosenia.com?subject=Demande%20de%20devis%20écran%20LED"
-          className="rounded-full border border-cyan/30 bg-cyan/10 px-3.5 py-1.5 text-xs font-semibold text-cyan transition-colors hover:bg-cyan/20"
+          className="cta-nav group cursor-pointer rounded-full border border-cyan/25 bg-bg px-4 py-2 text-xs font-bold text-cyan"
           style={{ fontFamily: 'var(--font-heading)' }}
         >
-          Parler à un expert →
+          <span className="relative flex items-center gap-2">
+            <span>Parler à un expert</span>
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-cyan/10 ring-1 ring-cyan/20 transition-all duration-200 group-hover:bg-cyan/20 group-hover:ring-cyan/45">
+              <svg width="8" height="8" viewBox="0 0 9 9" fill="none" aria-hidden="true">
+                <path d="M1.5 4.5h6M5.5 2l3 2.5-3 2.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
+          </span>
         </a>
       </div>
 

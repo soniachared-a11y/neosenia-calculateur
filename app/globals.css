@@ -109,7 +109,7 @@ body {
   }
 }
 
-/* ── CTA pill glow ── */
+/* ── CTA pill glow (hero CTAs — or et cyan) ── */
 .cta-glow {
   transition: box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
               transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -119,6 +119,32 @@ body {
   transform: translateY(-1px);
 }
 .cta-glow:active { transform: translateY(0); }
+
+/* ── CTA nav — shimmer sweep premium ── */
+.cta-nav {
+  position: relative;
+  overflow: hidden;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cta-nav::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(0,212,255,0.12) 50%, transparent 70%);
+  transform: translateX(-100%) skewX(-15deg);
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+.cta-nav:hover::before { transform: translateX(100%) skewX(-15deg); }
+.cta-nav:hover {
+  border-color: rgba(0, 212, 255, 0.55);
+  box-shadow: 0 0 18px rgba(0, 212, 255, 0.18), inset 0 0 12px rgba(0, 212, 255, 0.04);
+  transform: translateY(-1px);
+}
+.cta-nav:active { transform: translateY(0); }
 
 /* ── Sliders cyan ── */
 input[type='range'] {

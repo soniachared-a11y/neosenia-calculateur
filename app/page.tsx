@@ -40,7 +40,7 @@ export default function Home() {
           className="anim-fade-up anim-fade-up-2 relative font-bold leading-[1.04] tracking-tight text-primary"
           style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.9rem, 5.5vw, 3.5rem)' }}
         >
-          Votre écran LED vitrine —<br />
+          Votre écran LED vitrine<br />
           <span className="text-cyan">le vrai prix, tout compris.</span>
         </h1>
         <p
