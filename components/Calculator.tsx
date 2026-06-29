@@ -47,8 +47,8 @@ const PRODUCT_DATA: Record<string, {
 
 export function Calculator() {
   const [familyId, setFamilyId] = useState(families[0]?.id ?? '');
-  const [widthM, setWidthM] = useState(4);
-  const [heightM, setHeightM] = useState(2.4);
+  const [widthM, setWidthM] = useState(2);
+  const [heightM, setHeightM] = useState(1.5);
   const [showRoi, setShowRoi] = useState(false);
 
   const family = getFamily(familyId);
@@ -64,7 +64,7 @@ export function Calculator() {
     <div className="flex flex-col gap-5 lg:grid lg:grid-cols-[1fr_1fr]">
 
       {/* ── Colonne config ── */}
-      <div className="order-2 space-y-4 lg:order-1">
+      <div className="order-1 space-y-4 lg:order-1">
 
         {/* Sélection produit */}
         <div>
@@ -168,7 +168,7 @@ export function Calculator() {
       </div>
 
       {/* ── Colonne résultat ── */}
-      <div className="order-1 space-y-4 lg:order-2">
+      <div className="order-2 space-y-4 lg:order-2">
         <QuoteResult quote={quote} family={family} />
 
         {quote.status === 'ok' && (
