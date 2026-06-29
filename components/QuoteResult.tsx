@@ -7,155 +7,223 @@ async function genererDevisPDF(quote: any) {
   const { jsPDF } = await import('jspdf');
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
 
-  /* Palette */
+  /* Palette — jsPDF Helvetica = windows-1252 : eviter U+2248 et U+2013 */
   const SLATE9: [number,number,number] = [15, 23, 42];
+  const SLATE7: [number,number,number] = [51, 65, 86];
   const SLATE5: [number,number,number] = [100, 116, 139];
   const CYAN: [number,number,number] = [0, 212, 255];
+  const CYAN_D: [number,number,number] = [0, 180, 220];
   const WHITE: [number,number,number] = [255, 255, 255];
   const LIGHT: [number,number,number] = [248, 250, 252];
+  const BORDER: [number,number,number] = [226, 232, 240];
 
-  /* Fond blanc */
+  const dateStr = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+  const refNum = `NEO-${Date.now().toString(36).toUpperCase().slice(-6)}`;
+
+  /* ── Fond blanc ── */
   doc.setFillColor(...WHITE);
   doc.rect(0, 0, 210, 297, 'F');
 
-  /* Barre cyan top */
+  /* ── Barre top cyan ── */
   doc.setFillColor(...CYAN);
-  doc.rect(0, 0, 210, 3, 'F');
+  doc.rect(0, 0, 210, 4, 'F');
 
-  /* En-tête */
+  /* ── En-tete dark ── */
   doc.setFillColor(...SLATE9);
-  doc.rect(0, 3, 210, 30, 'F');
+  doc.rect(0, 4, 210, 34, 'F');
+
   doc.setTextColor(...WHITE);
-  doc.setFontSize(18);
+  doc.setFontSize(20);
   doc.setFont('helvetica', 'bold');
-  doc.text('NEOSENIA', 20, 18);
+  doc.text('NEOSENIA', 20, 22);
+
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(148, 163, 184);
+  doc.text('Ecrans LED transparents  |  contact@neosenia.com  |  neosenia.com', 20, 30);
+
+  doc.setTextColor(...CYAN);
+  doc.setFontSize(7.5);
+  doc.setFont('helvetica', 'bold');
+  doc.text('DEVIS INDICATIF', 190, 16, { align: 'right' });
+  doc.setTextColor(148, 163, 184);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7);
+  doc.text(`Ref. ${refNum}`, 190, 22, { align: 'right' });
+  doc.text(dateStr.toUpperCase(), 190, 28, { align: 'right' });
+
+  /* ── Zone produit ── */
+  doc.setFillColor(...LIGHT);
+  doc.rect(0, 38, 210, 28, 'F');
+  doc.setFillColor(...BORDER);
+  doc.rect(0, 66, 210, 0.4, 'F');
+
+  doc.setTextColor(...SLATE9);
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.text(quote.label ?? 'Ecran LED NEOSENIA', 20, 52);
+
   doc.setFontSize(8.5);
   doc.setFont('helvetica', 'normal');
-  doc.setTextColor(148, 163, 184);
-  doc.text('Écrans LED transparents · contact@neosenia.com · neosenia.com', 20, 26);
-
-  /* Badge DEVIS INDICATIF */
-  doc.setTextColor(...WHITE);
-  doc.setFontSize(7.5);
-  doc.setFont('helvetica', 'bold');
-  const dateStr = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
-  doc.text(`DEVIS INDICATIF · ${dateStr.toUpperCase()}`, 190, 18, { align: 'right' });
-
-  /* Zone produit */
-  doc.setFillColor(...LIGHT);
-  doc.rect(0, 33, 210, 24, 'F');
-  doc.setTextColor(...SLATE9);
-  doc.setFontSize(15);
-  doc.setFont('helvetica', 'bold');
-  doc.text(quote.label ?? 'Écran LED NEOSENIA', 20, 47);
-  if (quote.status === 'ok' && quote.priceHtEur) {
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(...SLATE5);
-    doc.text(`Surface : ${quote.surfaceM2} m² · Garantie ${quote.warrantyYears} ans`, 20, 54);
+  doc.setTextColor(...SLATE5);
+  if (quote.status === 'ok' && quote.surfaceM2) {
+    doc.text(`Surface : ${quote.surfaceM2} m2  |  Garantie : ${quote.warrantyYears} ans constructeur  |  Livraison DDP tout compris`, 20, 61);
   }
 
-  /* Prix */
+  /* ── Prix heros ── */
   if (quote.status === 'ok' && quote.priceHtEur) {
-    doc.setFillColor(...CYAN);
-    doc.rect(0, 57, 210, 0.5, 'F');
 
-    doc.setTextColor(...SLATE9);
-    doc.setFontSize(32);
+    doc.setFillColor(...WHITE);
+    doc.rect(20, 74, 170, 48, 'F');
+    doc.setDrawColor(...BORDER);
+    doc.setLineWidth(0.3);
+    doc.rect(20, 74, 170, 48);
+    doc.setFillColor(...CYAN);
+    doc.rect(20, 74, 3, 48, 'F');
+
+    doc.setFontSize(7.5);
     doc.setFont('helvetica', 'bold');
-    doc.text(`${eur(quote.priceHtEur)}`, 20, 78);
-    doc.setFontSize(10);
+    doc.setTextColor(...CYAN_D);
+    doc.text('PRIX ESTIME HT', 30, 85);
+
+    doc.setFontSize(30);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...SLATE9);
+    doc.text(eur(quote.priceHtEur), 30, 103);
+
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...SLATE7);
+    doc.text(`${eur(quote.priceTtcEur)} TTC`, 155, 85, { align: 'right' });
+    doc.setFontSize(7.5);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(...SLATE5);
-    doc.text('HT · transport + douane + TVA 20 % inclus', 20, 86);
+    doc.text('TVA 20 % incluse', 155, 91, { align: 'right' });
 
-    doc.setFontSize(12);
-    doc.setTextColor(...SLATE9);
-    doc.setFont('helvetica', 'bold');
-    doc.text(`${eur(quote.priceTtcEur)} TTC`, 20, 95);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    doc.setTextColor(...SLATE5);
-    doc.text('Prix verrouillé 7 jours sur acompte 30 %', 20, 101);
-
-    /* Séparateur */
-    doc.setFillColor(226, 232, 240);
-    doc.rect(20, 108, 170, 0.4, 'F');
-
-    /* Détails */
-    doc.setFontSize(9);
-    const rows: [string, string][] = [
-      ['Surface', `${quote.surfaceM2} m²`],
-      ['Garantie constructeur', `${quote.warrantyYears} ans`],
-    ];
-    if (quote.transitDays) rows.push(['Délai porte-à-porte', `≈ ${quote.transitDays[0]}–${quote.transitDays[1]} jours ouvrés`]);
-    if (quote.resolution) rows.push(['Résolution', `${quote.resolution} px`]);
-
-    let y = 118;
-    rows.forEach(([k, v]) => {
-      doc.setTextColor(...SLATE5);
-      doc.setFont('helvetica', 'normal');
-      doc.text(k, 20, y);
-      doc.setTextColor(...SLATE9);
-      doc.setFont('helvetica', 'bold');
-      doc.text(v, 110, y);
-      y += 9;
-    });
-
-    /* Ce qui est inclus */
-    doc.setFillColor(...LIGHT);
-    doc.roundedRect(20, y + 6, 170, 58, 3, 3, 'F');
-    doc.setFillColor(...CYAN);
-    doc.rect(20, y + 6, 3, 58, 'F');
-
-    doc.setTextColor(...SLATE9);
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Inclus dans ce prix', 30, y + 18);
-
-    const inclus = [
-      'Fret ferroviaire Chine -> France (DDP)',
-      'Dedouanement + frais de port',
-      'TVA 20 % francaise',
-      'Controleur Nova TB40 + cablage',
-      'Support technique NEOSENIA 5 ans',
-    ];
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    inclus.forEach((it, i) => {
-      doc.setTextColor(0, 180, 220);
-      doc.text('+', 30, y + 28 + i * 8);
-      doc.setTextColor(...SLATE9);
-      doc.text(it, 37, y + 28 + i * 8);
-    });
-    y += 72;
-
-    /* Certifications */
     doc.setFontSize(8);
     doc.setTextColor(...SLATE5);
-    doc.text('Certifie : CE · RoHS · FCC · IP54', 20, y + 14);
+    doc.text('Transport DDP + dedouanement + TVA 20 % inclus  |  Prix ferme 7 j sur acompte 30 %', 30, 113);
+
+    /* ── Specifications ── */
+    let y = 136;
+
+    doc.setFontSize(8.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...SLATE9);
+    doc.text('SPECIFICATIONS', 20, y);
+    doc.setFillColor(...CYAN);
+    doc.rect(20, y + 2, 30, 0.5, 'F');
+    y += 10;
+
+    const rows: [string, string][] = [
+      ['Surface', `${quote.surfaceM2} m2`],
+      ['Garantie constructeur', `${quote.warrantyYears} ans`],
+    ];
+    if (quote.transitDays) rows.push(['Delai porte-a-porte', `${quote.transitDays[0]} - ${quote.transitDays[1]} jours ouvres`]);
+    if (quote.resolution) rows.push(['Resolution', `${quote.resolution} px`]);
+    if (quote.controller) rows.push(['Controleur', quote.controller]);
+
+    rows.forEach(([k, v], idx) => {
+      const bg = idx % 2 === 0 ? LIGHT : WHITE;
+      doc.setFillColor(...bg);
+      doc.rect(20, y - 4, 170, 9, 'F');
+      doc.setTextColor(...SLATE5);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8.5);
+      doc.text(k, 24, y + 1);
+      doc.setTextColor(...SLATE9);
+      doc.setFont('helvetica', 'bold');
+      doc.text(v, 120, y + 1);
+      y += 9;
+    });
+    y += 6;
+
+    /* ── Inclus ── */
+    doc.setFontSize(8.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...SLATE9);
+    doc.text('CE QUI EST INCLUS', 20, y);
+    doc.setFillColor(...CYAN);
+    doc.rect(20, y + 2, 36, 0.5, 'F');
+    y += 12;
+
+    const inclus = [
+      'Fret ferroviaire Chine - France (DDP)',
+      'Dedouanement + frais de port nationaux',
+      'TVA 20 % francaise',
+      'Controleur Nova TB40 + cablage complet',
+      'Support technique NEOSENIA 5 ans',
+    ];
+    const blocH = inclus.length * 9 + 8;
+    doc.setFillColor(...LIGHT);
+    doc.rect(20, y - 4, 170, blocH, 'F');
+    doc.setFillColor(...CYAN_D);
+    doc.rect(20, y - 4, 2.5, blocH, 'F');
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    inclus.forEach((it) => {
+      doc.setTextColor(...CYAN_D);
+      doc.text('+', 27, y + 1);
+      doc.setTextColor(...SLATE9);
+      doc.text(it, 34, y + 1);
+      y += 9;
+    });
+    y += 8;
+
+    /* Certifications */
+    const certs = ['CE', 'RoHS', 'FCC', 'IP54'];
+    let cx = 20;
+    certs.forEach((cert) => {
+      doc.setFillColor(...LIGHT);
+      doc.setDrawColor(...BORDER);
+      doc.setLineWidth(0.3);
+      doc.rect(cx, y, 18, 8);
+      doc.setTextColor(...SLATE5);
+      doc.setFontSize(7);
+      doc.setFont('helvetica', 'bold');
+      doc.text(cert, cx + 9, y + 5.5, { align: 'center' });
+      cx += 22;
+    });
   }
 
-  /* Avertissement légal */
-  doc.setFillColor(241, 245, 249);
-  doc.rect(0, 258, 210, 24, 'F');
-  doc.setFontSize(7.5);
-  doc.setTextColor(...SLATE5);
-  const note = 'Ce document est une estimation indicative basee sur notre grille tarifaire. Votre devis ferme - etabli apres mesure de votre vitrine - vous est remis sous 48 h. Prix en EUR HT. TVA 20 % applicable. Sans engagement.';
-  const lines = doc.splitTextToSize(note, 170);
-  doc.text(lines, 20, 264);
-
-  /* Footer */
-  doc.setFillColor(...SLATE9);
-  doc.rect(0, 284, 210, 13, 'F');
+  /* ── Prochaines etapes ── */
+  const psY = 240;
+  doc.setFillColor(...LIGHT);
+  doc.rect(20, psY, 170, 28, 'F');
   doc.setFillColor(...CYAN);
-  doc.rect(0, 284, 3, 13, 'F');
-  doc.setFontSize(7.5);
+  doc.rect(20, psY, 2.5, 28, 'F');
+  doc.setFontSize(8.5);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...SLATE9);
+  doc.text('PROCHAINES ETAPES', 28, psY + 9);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  doc.setTextColor(...SLATE5);
+  doc.text('1. Contactez-nous pour confirmer vos dimensions definitives', 28, psY + 17);
+  doc.text('2. Devis ferme sous 48 h apres mesure  |  Acompte 30 % a la commande', 28, psY + 24);
+
+  /* ── Disclaimer ── */
+  doc.setFillColor(241, 245, 249);
+  doc.rect(0, 270, 210, 18, 'F');
+  doc.setFontSize(7);
+  doc.setTextColor(...SLATE5);
+  doc.setFont('helvetica', 'normal');
+  const note = 'Ce document est une estimation indicative basee sur notre grille tarifaire. Votre devis ferme est etabli apres mesure precise de votre vitrine. Prix en EUR HT. TVA 20 % applicable. Sans engagement.';
+  const lines = doc.splitTextToSize(note, 170);
+  doc.text(lines, 20, 276);
+
+  /* ── Footer ── */
+  doc.setFillColor(...SLATE9);
+  doc.rect(0, 287, 210, 10, 'F');
+  doc.setFillColor(...CYAN);
+  doc.rect(0, 287, 3, 10, 'F');
+  doc.setFontSize(7);
   doc.setTextColor(148, 163, 184);
   doc.setFont('helvetica', 'normal');
-  doc.text('NEOSEN LIMITED (trading as NEOSENIA)  ·  Dublin, Irlande  ·  contact@neosenia.com  ·  neosenia.com', 8, 292);
+  doc.text('NEOSEN LIMITED (trading as NEOSENIA)  |  Dublin, Irlande  |  contact@neosenia.com  |  neosenia.com', 8, 293.5);
 
-  doc.save(`devis-neosenia-${Date.now()}.pdf`);
+  doc.save(`devis-neosenia-${refNum}.pdf`);
 }
 
 export function QuoteResult({ quote, family }: { quote: Quote; family?: Family }) {
