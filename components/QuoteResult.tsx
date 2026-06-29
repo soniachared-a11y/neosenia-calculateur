@@ -7,6 +7,9 @@ async function genererDevisPDF(quote: any) {
   const { jsPDF } = await import('jspdf');
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
 
+  /* Intl.NumberFormat fr-FR utilise U+00A0 comme séparateur — illisible en jsPDF */
+  const pdfEur = (n: number) => eur(n).replace(/ /g, ' ');
+
   /* Palette — Helvetica = windows-1252 : pas de U+2248 ni U+2013 */
   const C = {
     dark:   [15, 23, 42]   as [number,number,number],
@@ -88,7 +91,7 @@ async function genererDevisPDF(quote: any) {
     doc.text('PRIX ESTIME HT', 28, 84);
 
     font('bold', 28); text(C.dark);
-    doc.text(eur(quote.priceHtEur), 28, 103);
+    doc.text(pdfEur(quote.priceHtEur), 28, 103);
 
     font('normal', 7.5); text(C.muted);
     doc.text('Transport + dedouanement + TVA 20 % inclus', 28, 111);
@@ -96,7 +99,7 @@ async function genererDevisPDF(quote: any) {
 
     /* Colonne droite — prix TTC */
     font('bold', 12); text(C.mid);
-    doc.text(eur(quote.priceTtcEur), 189, 94, { align: 'right' });
+    doc.text(pdfEur(quote.priceTtcEur), 189, 94, { align: 'right' });
     font('normal', 7.5); text(C.muted);
     doc.text('TTC TVA 20 %', 189, 101, { align: 'right' });
 
