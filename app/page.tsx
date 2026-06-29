@@ -65,6 +65,19 @@ export default function Home() {
               {text}
             </span>
           ))}
+          {/* Paiement fractionné inline */}
+          <span className="flex items-center gap-2 rounded-full border border-border-card bg-card px-3 py-1">
+            <svg viewBox="0 0 22 24" width="11" height="13" fill="none" aria-hidden="true">
+              <path d="M2 1.5h7.5c1.5 0 2.7.5 3.3 1.4.6.9.7 2.2.4 3.7C12.8 8.8 11.3 10 9.6 10.4c-.5.1-1 .2-1.6.2H6.2L4.9 18.5H1.5z" fill="#003087"/>
+              <path d="M5.5 1.5H13c1.5 0 2.7.5 3.3 1.4.6.9.7 2.2.4 3.7-0.4 2.2-1.9 3.4-3.6 3.8-.5.1-1 .2-1.6.2H9.7L8.4 18.5H5z" fill="#009CDE"/>
+            </svg>
+            <svg viewBox="0 0 20 20" width="11" height="11" aria-hidden="true">
+              <rect width="20" height="20" rx="5" fill="#FFB3C7"/>
+              <path d="M7 5v10" stroke="#17120E" strokeWidth="2.2" strokeLinecap="round"/>
+              <path d="M13 5 9 10l4 5" stroke="#17120E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span>3× ou 4× sans frais</span>
+          </span>
         </div>
       </header>
 

@@ -387,6 +387,35 @@ export function QuoteResult({ quote, family }: { quote: Quote; family?: Family }
           </div>
         )}
 
+        {/* Paiement fractionné */}
+        <div className="mt-5 rounded-xl border border-border-card bg-bg p-4">
+          <div className="mb-3 flex items-center gap-2">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-cyan">
+              <rect x="1" y="4" width="22" height="16" rx="2" /><line x1="1" y1="10" x2="23" y2="10" />
+            </svg>
+            <p className="text-xs font-bold text-primary">Payez en 3× ou 4× sans frais</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {/* PayPal */}
+            <div className="flex items-center gap-2.5 rounded-lg border border-[#009cde]/25 bg-[#001530]/60 px-3 py-2.5">
+              <LogoPayPal />
+              <div>
+                <p className="text-xs font-bold text-white">PayPal</p>
+                <p className="text-[10px] text-[#66b0e0]">Payer en 4× sans frais</p>
+              </div>
+            </div>
+            {/* Klarna */}
+            <div className="flex items-center gap-2.5 rounded-lg border border-[#FFB3C7]/25 bg-[#1e0810]/60 px-3 py-2.5">
+              <LogoKlarna />
+              <div>
+                <p className="text-xs font-bold text-[#FFB3C7]" style={{ fontStyle: 'italic', letterSpacing: '-0.02em' }}>klarna</p>
+                <p className="text-[10px] text-[#FFB3C7]/55">Payer en 3× sans frais</p>
+              </div>
+            </div>
+          </div>
+          <p className="mt-2.5 text-[10px] text-muted">Sans intérêts · Sans justificatif · Dès 300 €</p>
+        </div>
+
         {/* CTA */}
         <div className="mt-6 border-t border-border pt-6">
           <CtaDevis />
@@ -451,6 +480,31 @@ function IncludeList({ title, items, positive }: { title: string; items: string[
         ))}
       </ul>
     </div>
+  );
+}
+
+/* ── Logos paiement inline SVG (vrais brand marks) ── */
+
+function LogoPayPal() {
+  return (
+    <svg viewBox="0 0 22 24" width="15" height="17" aria-hidden="true" fill="none">
+      {/* P foncé — #003087 */}
+      <path d="M2 1.5h7.5c1.5 0 2.7.5 3.3 1.4.6.9.7 2.2.4 3.7C12.8 8.8 11.3 10 9.6 10.4c-.5.1-1 .2-1.6.2H6.2L4.9 18.5H1.5z" fill="#003087"/>
+      {/* P clair — #009CDE décalé */}
+      <path d="M5.5 1.5H13c1.5 0 2.7.5 3.3 1.4.6.9.7 2.2.4 3.7-0.4 2.2-1.9 3.4-3.6 3.8-.5.1-1 .2-1.6.2H9.7L8.4 18.5H5z" fill="#009CDE"/>
+    </svg>
+  );
+}
+
+function LogoKlarna() {
+  return (
+    <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+      {/* Carré rose arrondi — brand Klarna */}
+      <rect width="20" height="20" rx="5" fill="#FFB3C7"/>
+      {/* K mark */}
+      <path d="M7 5v10" stroke="#17120E" strokeWidth="2.2" strokeLinecap="round"/>
+      <path d="M13 5 9 10l4 5" stroke="#17120E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
   );
 }
 
