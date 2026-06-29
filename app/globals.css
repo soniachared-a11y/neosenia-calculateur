@@ -446,6 +446,16 @@ details[open] summary .chevron { transform: rotate(180deg); }
   color: #0f172a;
 }
 
+/* ── Scan line (mockup phone UGC) ── */
+@keyframes scan-line {
+  0%   { top: 0%; opacity: 0.6; }
+  50%  { opacity: 0.8; }
+  100% { top: 100%; opacity: 0; }
+}
+.animate-scan-line {
+  animation: scan-line 2.8s linear infinite;
+}
+
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
