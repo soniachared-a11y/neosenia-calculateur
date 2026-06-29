@@ -151,6 +151,16 @@ input[type='range']::-moz-range-thumb {
   box-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
 }
 
+/* Variante or (simulateur régie) — specificity bumpée pour battre la base */
+input[type='range'].slider-gold::-webkit-slider-thumb {
+  background: var(--gold);
+  box-shadow: 0 0 8px rgba(212, 168, 83, 0.5);
+}
+input[type='range'].slider-gold::-moz-range-thumb {
+  background: var(--gold);
+  box-shadow: 0 0 8px rgba(212, 168, 83, 0.5);
+}
+
 /* ── Details (collapsible tech specs) ── */
 details > summary { cursor: pointer; list-style: none; }
 details > summary::-webkit-details-marker { display: none; }
